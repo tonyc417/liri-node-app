@@ -9,8 +9,6 @@ var spotify = new Spotify({
     secret: process.env.SPOTIFY_SECRET
   });
 
-console.log(process.argv);
-
 var userInput = process.argv[3];
 
 var queryUrl = "http://www.omdbapi.com/?t=" + userInput + "&y=&plot=short&apikey=trilogy";
@@ -36,6 +34,17 @@ if (process.argv[2] === "movie-this" || process.argv[2] === "movie this") {
       console.log("Language: " + response.data.Language);
       console.log("Plot: " + response.data.Plot);
       console.log("Actors: " + response.data.Actors);
+    }
+  )
+}
+
+if (process.argv[2] === "concert-this") {
+  axios.get("https://rest.bandsintown.com/artists/" + userInput + "/events?app_id=codingbootcamp")
+  .then(function(response) {
+      console.log("Artist: " + userInput)
+      console.log("Event date: " + response.data[0].datetime);
+      console.log("Venue Name: " + response.data[0].venue.name);
+      console.log("venue City: " + response.data[0].venue.city);
     }
   )
 }
