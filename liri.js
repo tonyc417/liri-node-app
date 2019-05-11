@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+var fs = require("fs");
 var Spotify = require('node-spotify-api');
 var keys = require("./keys.js")
 var axios = require("axios");
@@ -9,22 +10,39 @@ var spotify = new Spotify({
     secret: process.env.SPOTIFY_SECRET
   });
 
-var userInput = process.argv[3];
+fs.readFile("random.txt", "utf8", function(error, newSearch) {
+  if (error) {
+    return console.log(error);
+  }
+  if (process.argv[2] === "do-what-it-says") {
+    spotify.request('https://api.spotify.com/v1/search?q=' + newSearch + '&type=track&limit=2')
+    .then(function(data) {
+      console.log("You searched for: " + userInput);
+      console.log("Artist: " + data.tracks.items[0].artists[0].name);
+      console.log("Album Name: " + data.tracks.items[0].album.name);
+      console.log("Song Name: " + data.tracks.items[0].name);
+      console.log("Preview Link: " + data.tracks.items[0].external_urls.spotify);
+  })
+  }
+
+})
+
+var userInput = process.argv.slice(3).join(" ");
 
 var queryUrl = "http://www.omdbapi.com/?t=" + userInput + "&y=&plot=short&apikey=trilogy";
 
 if (process.argv[2] === "spotify-this-song") {
   spotify.request('https://api.spotify.com/v1/search?q=' + userInput + '&type=track&limit=2')
   .then(function(data) {
-    console.log("You searched for: " + songName);
+    console.log("You searched for: " + userInput);
     console.log("Artist: " + data.tracks.items[0].artists[0].name);
     console.log("Album Name: " + data.tracks.items[0].album.name);
     console.log("Song Name: " + data.tracks.items[0].name);
     console.log("Preview Link: " + data.tracks.items[0].external_urls.spotify);
 })
-}
+} 
 
-if (process.argv[2] === "movie-this" || process.argv[2] === "movie this") {
+if (process.argv[2] === "movie-this") {
   axios.get(queryUrl).then(
     function(response) {
       console.log("Title: " + response.data.Title);
